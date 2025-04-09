@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       URL:
-        description: "PortROM download link"
+        description: "PortROM indirme bağlantısı"
         required: true
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     steps:
       - uses: actions/checkout@master
-      - name: 1. Prepare
+      - name: 1. Hazırlık
         run: |
           echo "BASE_ZIP_NAME=miui_UMI_V14.0.4.0.TJBCNXM_23fc5ef4ee_13.0.zip" >> $GITHUB_ENV
           sudo apt install python3 python3-pip aria2 zip p7zip-full tar zipalign zstd openjdk-8-jre
@@ -30,19 +30,18 @@ jobs:
           curl https://rclone.org/install.sh | sudo bash
           mkdir -p ~/.config/rclone/
           unzip -P {{ secrets.PASSWORD }} "$GITHUB_WORKSPACE"/tools/rclone.zip -d ~/.config/rclone/
-      - name: 2. Staring port.
+      - name: 2. Portlama Başlatılıyor
         run: |
           cd "$GITHUB_WORKSPACE"/
           sudo ./setup.sh
           sudo ./port.sh http://ks3orig.bigota.d.miui.com/V14.0.4.0.TJBCNXM/miui_UMI_V14.0.4.0.TJBCNXM_23fc5ef4ee_13.0.zip ${{ github.event.inputs.URL }}
-      - name: 3. Uploading ROM to github
+      - name: 3. ROM'u GitHub'a Yükleme
         run: |
           rclone -sync out/*.zip onedrive:/ROM/github/
-      - name: 4. Delete workflow
+      - name: 4. İş Akışını Sil
         uses: Mattraks/delete-workflow-runs@v2
         with:
           token: ${{ github.token }}
           repository: ${{ github.repository }}
           retain_days: 0
           keep_minimum_runs: 0
-
