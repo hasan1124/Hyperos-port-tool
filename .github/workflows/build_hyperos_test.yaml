@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       URL:
-        description: "PortROM download link"
+        description: "PortROM indirme linki"
         required: true
 jobs:
   build:
@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.runs-on }}
     steps:
       - uses: actions/checkout@master
-      - name: 1. Prepare
+      - name: 1. Hazırlık
         run: |
           echo "BASE_ZIP_NAME=miui_UMI_V14.0.4.0.TJBCNXM_23fc5ef4ee_13.0.zip" >> $GITHUB_ENV
           sudo apt install python3 python3-pip aria2 zip p7zip-full tar zipalign zstd openjdk-8-jre
@@ -27,16 +27,15 @@ jobs:
           pip3 install requests
           pip3 install beautifulsoup4
           pip3 install --ignore-installed pyyaml
-      - name: 2. Staring port.
+      - name: 2. Port işlemi başlatılıyor.
         run: |
           cd "$GITHUB_WORKSPACE"/
           sudo ./setup.sh
           sudo ./port.sh http://cdnorg.d.miui.com//V14.0.4.0.TJBCNXM/miui_UMI_V14.0.4.0.TJBCNXM_23fc5ef4ee_13.0.zip ${{ github.event.inputs.URL }}
-      - name: 3. Delete workflow
+      - name: 3. Workflow siliniyor
         uses: Mattraks/delete-workflow-runs@v2
         with:
           token: ${{ github.token }}
           repository: ${{ github.repository }}
           retain_days: 0
           keep_minimum_runs: 0
-
